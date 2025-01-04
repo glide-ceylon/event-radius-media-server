@@ -13,10 +13,10 @@ const nms = new NodeMediaServer({
     port: 8000,
     mediaroot: "./media",
     host: "view.stream.buyon.lk",
-    allow_origin: "*",
+    allow_origin: "https://event-radius.web.app",
     cors: {
       enabled: true,
-      origin: "*",
+      origin: "https://event-radius.web.app",
       methods: "GET,PUT,POST,DELETE,OPTIONS",
       allowedHeaders:
         "Origin,X-Requested-With,Content-Type,Accept,Authorization",
