@@ -45,39 +45,39 @@ const config = {
 
 const nms = new NodeMediaServer(config);
 
-nms.on("prePublish", async (id, streamPath, args) => {
-  const token = args.headers ? args.headers.Authorization : null;
-  const streamKey = args.streamPath.split("/").pop(); // Extract stream key
-  const session = nms.getSession(id);
+// nms.on("prePublish", async (id, streamPath, args) => {
+//   const token = args.headers ? args.headers.Authorization : null;
+//   const streamKey = args.streamPath.split("/").pop(); // Extract stream key
+//   const session = nms.getSession(id);
 
-  console.log(
-    `[NodeEvent on prePublish] streamPath=${streamPath} args=${JSON.stringify(
-      args
-    )}`
-  );
+//   console.log(
+//     `[NodeEvent on prePublish] streamPath=${streamPath} args=${JSON.stringify(
+//       args
+//     )}`
+//   );
 
-  if (!token) {
-    console.log("Connection rejected: No token provided");
-    session.reject();
-    return;
-  }
+//   if (!token) {
+//     console.log("Connection rejected: No token provided");
+//     session.reject();
+//     return;
+//   }
 
-  try {
-    const decoded = await verifyTokenWithAuthServer(token);
+//   try {
+//     const decoded = await verifyTokenWithAuthServer(token);
 
-    // Check if the user has access to the stream
-    if (decoded.allowedStreams.includes(streamKey)) {
-      console.log(`Connection allowed for stream: ${streamKey}`);
-    } else {
-      console.log(`Connection denied for stream: ${streamKey}`);
-      session.reject();
-    }
-  } catch (err) {
-    console.log("Connection rejected: Invalid token");
-    const session = nms.getSession(id);
-    session.reject();
-  }
-});
+//     // Check if the user has access to the stream
+//     if (decoded.allowedStreams.includes(streamKey)) {
+//       console.log(`Connection allowed for stream: ${streamKey}`);
+//     } else {
+//       console.log(`Connection denied for stream: ${streamKey}`);
+//       session.reject();
+//     }
+//   } catch (err) {
+//     console.log("Connection rejected: Invalid token");
+//     const session = nms.getSession(id);
+//     session.reject();
+//   }
+// });
 
 async function verifyTokenWithAuthServer(token) {
   // allow all streams for now
