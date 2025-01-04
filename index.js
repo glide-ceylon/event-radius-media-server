@@ -1,5 +1,4 @@
 const NodeMediaServer = require("node-media-server");
-
 const nms = new NodeMediaServer({
   rtmp: {
     port: 1935,
@@ -13,8 +12,18 @@ const nms = new NodeMediaServer({
   http: {
     port: 8000,
     mediaroot: "./media",
-    allow_origin: "*", // Updated to allow your domain
     host: "view.stream.buyon.lk",
+    allow_origin: "*",
+    cors: {
+      enabled: true,
+      origin: "*",
+      methods: "GET,PUT,POST,DELETE,OPTIONS",
+      allowedHeaders:
+        "Origin,X-Requested-With,Content-Type,Accept,Authorization",
+      exposedHeaders: "Content-Range,X-Content-Range",
+      credentials: true,
+      maxAge: 3600,
+    },
   },
   trans: {
     ffmpeg: "/usr/bin/ffmpeg",
