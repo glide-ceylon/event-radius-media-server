@@ -13,17 +13,8 @@ const nms = new NodeMediaServer({
   http: {
     port: 8000,
     mediaroot: "./media",
-    allow_origin: "https://event-radius.web.app", // Updated to allow your domain
+    allow_origin: "*", // Updated to allow your domain
     host: "view.stream.buyon.lk",
-    cors: {
-      enabled: true,
-      origin: ["https://event-radius.web.app", "*"], // Added your domain explicitly
-      methods: "GET,POST,OPTIONS",
-      allowedHeaders: "*",
-      exposedHeaders: "*",
-      credentials: true,
-      maxAge: 1728000,
-    },
   },
   trans: {
     ffmpeg: "/usr/bin/ffmpeg",
