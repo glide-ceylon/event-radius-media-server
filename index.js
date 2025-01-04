@@ -35,7 +35,7 @@ const nms = new NodeMediaServer({
     warnings: true,
   },
   http: {
-    port: 3000,
+    port: 8000,
     mediaroot: "./media",
     host: "view-stream.buyon.lk",
     allow_origin: "*",
@@ -86,7 +86,7 @@ nms.on("prePlay", (id, streamPath, args) => {
 nms.run();
 
 // Start Express on port 3000
-const PORT = 8000;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Express server running on port ${PORT}`);
 });
