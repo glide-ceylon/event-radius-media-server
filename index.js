@@ -46,47 +46,11 @@ const nms = new NodeMediaServer({
 });
 
 nms.on("prePublish", (id, streamPath, args) => {
-  const streamKey = streamPath.split("/").pop(); // Extract stream key, e.g., streamer1
-  const appParams = new URLSearchParams(args.app.split("?")[1] || "");
-  const publishKey = appParams.get("key"); // Extract key from app parameter
-
-  if (!publishKey) {
-    console.log(`[prePublish] No publish key provided for stream ${streamKey}`);
-    const session = nms.getSession(id);
-    session.reject();
-    return;
-  }
-
-  if (!validatePublishKey(streamKey, publishKey)) {
-    console.log(`[prePublish] Invalid publish key for stream ${streamKey}`);
-    const session = nms.getSession(id);
-    session.reject();
-    return;
-  }
-
-  console.log(`[prePublish] Valid publish key for stream ${streamKey}`);
+  console.log(id, streamPath, args);
 });
 
 nms.on("prePlay", (id, streamPath, args) => {
-  const streamKey = streamPath.split("/").pop(); // Extract stream key, e.g., streamer1
-  const appParams = new URLSearchParams(args.app.split("?")[1] || "");
-  const viewKey = appParams.get("key"); // Extract key from app parameter
-
-  if (!viewKey) {
-    console.log(`[prePlay] No view key provided for stream ${streamKey}`);
-    const session = nms.getSession(id);
-    session.reject();
-    return;
-  }
-
-  if (!validateViewKey(streamKey, viewKey)) {
-    console.log(`[prePlay] Invalid view key for stream ${streamKey}`);
-    const session = nms.getSession(id);
-    session.reject();
-    return;
-  }
-
-  console.log(`[prePlay] Valid view key for stream ${streamKey}`);
+  console.log(id, streamPath, args);
 });
 
 const streamMapping = {
