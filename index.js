@@ -47,7 +47,8 @@ const nms = new NodeMediaServer({
 
 nms.on("prePublish", (id, streamPath, args) => {
   const streamKey = streamPath.split("/").pop(); // Extract stream key, e.g., streamer1
-  const publishKey = args.key && args.query.key; // Publisher provides this as a query parameter
+  const appParams = new URLSearchParams(args.app.split("?")[1] || "");
+  const publishKey = appParams.get("key"); // Extract key from app parameter
 
   if (!publishKey) {
     console.log(`[prePublish] No publish key provided for stream ${streamKey}`);
@@ -68,7 +69,8 @@ nms.on("prePublish", (id, streamPath, args) => {
 
 nms.on("prePlay", (id, streamPath, args) => {
   const streamKey = streamPath.split("/").pop(); // Extract stream key, e.g., streamer1
-  const viewKey = args.key && args.query.key; // Viewer provides this as a query parameter
+  const appParams = new URLSearchParams(args.app.split("?")[1] || "");
+  const viewKey = appParams.get("key"); // Extract key from app parameter
 
   if (!viewKey) {
     console.log(`[prePlay] No view key provided for stream ${streamKey}`);
