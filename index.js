@@ -3,15 +3,25 @@ const NodeMediaServer = require("node-media-server");
 const config = {
   rtmp: {
     port: 1935,
-    chunk_size: 60000,
+    chunk_size: 4096, // Reduced from 60000 for better streaming performance
     gop_cache: true,
-    ping: 30,
-    ping_timeout: 60,
+    ping: 60, // Increased for more stable connections
+    ping_timeout: 30, // Reduced to detect disconnections faster
+    warnings: true, // Enable warnings for debugging
   },
   http: {
     port: 8000,
     mediaroot: "./media",
     allow_origin: "*",
+    cors: {
+      enabled: true, // Enable CORS explicitly
+      origin: "*", // Allow all origins - modify in production
+      methods: "GET,POST,OPTIONS",
+      allowedHeaders: "*",
+      exposedHeaders: "*",
+      credentials: true,
+      maxAge: 1728000,
+    },
   },
   trans: {
     ffmpeg: "/usr/bin/ffmpeg",
@@ -19,9 +29,17 @@ const config = {
       {
         app: "live",
         hls: true,
-        hlsFlags: "[hls_time=2:hls_list_size=3:hls_flags=delete_segments]",
+        hlsFlags:
+          "[hls_time=2:hls_list_size=3:hls_flags=delete_segments:hls_init_time=4]",
+        // Added settings for better quality/performance balance
+        args: "-c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -b:a 128k",
       },
     ],
+  },
+  relay: {
+    ffmpeg: "/usr/bin/ffmpeg",
+    tasks: [],
+    edge: process.env.NODE_ENV === "production" ? process.env.EDGE_SERVER : "",
   },
 };
 
