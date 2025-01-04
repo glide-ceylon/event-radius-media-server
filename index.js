@@ -45,13 +45,9 @@ const nms = new NodeMediaServer({
   },
 });
 
-nms.on("prePublish", (id, streamPath, args) => {
-  console.log(id, streamPath, args);
-});
+nms.on("prePublish", (id, streamPath, args) => {});
 
-nms.on("prePlay", (id, streamPath, args) => {
-  console.log(id, streamPath, args);
-});
+nms.on("prePlay", (id, streamPath, args) => {});
 
 const streamMapping = {
   streamer1: {
