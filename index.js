@@ -47,7 +47,14 @@ const nms = new NodeMediaServer({
 
 nms.on("prePublish", (id, streamPath, args) => {
   const streamKey = streamPath.split("/").pop(); // Extract stream key, e.g., streamer1
-  const publishKey = args.query.key; // Publisher provides this as a query parameter
+  const publishKey = args.key && args.query.key; // Publisher provides this as a query parameter
+
+  if (!publishKey) {
+    console.log(`[prePublish] No publish key provided for stream ${streamKey}`);
+    const session = nms.getSession(id);
+    session.reject();
+    return;
+  }
 
   if (!validatePublishKey(streamKey, publishKey)) {
     console.log(`[prePublish] Invalid publish key for stream ${streamKey}`);
@@ -61,7 +68,14 @@ nms.on("prePublish", (id, streamPath, args) => {
 
 nms.on("prePlay", (id, streamPath, args) => {
   const streamKey = streamPath.split("/").pop(); // Extract stream key, e.g., streamer1
-  const viewKey = args.query.key; // Viewer provides this as a query parameter
+  const viewKey = args.key && args.query.key; // Viewer provides this as a query parameter
+
+  if (!viewKey) {
+    console.log(`[prePlay] No view key provided for stream ${streamKey}`);
+    const session = nms.getSession(id);
+    session.reject();
+    return;
+  }
 
   if (!validateViewKey(streamKey, viewKey)) {
     console.log(`[prePlay] Invalid view key for stream ${streamKey}`);
@@ -72,6 +86,17 @@ nms.on("prePlay", (id, streamPath, args) => {
 
   console.log(`[prePlay] Valid view key for stream ${streamKey}`);
 });
+
+const streamMapping = {
+  streamer1: {
+    publishKey: "pub_5f3a8291e4b0c9a7d6b2c1a0",
+    viewKeys: ["view_7d9f2e4a8b5c3n6m1k9h7g5", "view_2b8n4m6k9h3g5f1d7s9a4x2"],
+  },
+  streamer2: {
+    publishKey: "pub_9d2c4b7a6e8f1n3m5k9h2g4",
+    viewKeys: ["view_3f5h7j9k2n4m6q8w9e1r3t5", "view_8k2m4n6p9r3t5v7x1z8b4d6"],
+  },
+};
 
 function validatePublishKey(streamKey, providedKey) {
   const stream = streamMapping[streamKey];
