@@ -3,7 +3,7 @@ const nms = new NodeMediaServer({
   rtmp: {
     port: 1935,
     chunk_size: 4096,
-    host: "rtmp.stream.buyon.lk",
+    host: "rtmp-stream.buyon.lk",
     gop_cache: true,
     ping: 60,
     ping_timeout: 30,
@@ -12,7 +12,7 @@ const nms = new NodeMediaServer({
   http: {
     port: 8000,
     mediaroot: "./media",
-    host: "view.stream.buyon.lk",
+    host: "view-stream.buyon.lk",
     allow_origin: "*",
     cors: {
       enabled: true,
