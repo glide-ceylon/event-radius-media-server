@@ -1,4 +1,29 @@
+const express = require("express");
+const cors = require("cors");
 const NodeMediaServer = require("node-media-server");
+const httpProxy = require("http-proxy");
+
+// Create Express app
+const app = express();
+const proxy = httpProxy.createProxyServer();
+
+// Configure CORS for Express
+app.use(
+  cors({
+    origin: "*", // In production, change to your specific domains
+    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS", "HEAD", "PATCH"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+    ],
+    credentials: true,
+  })
+);
+
+// Your existing Node-Media-Server config
 const nms = new NodeMediaServer({
   rtmp: {
     port: 1935,
@@ -10,28 +35,10 @@ const nms = new NodeMediaServer({
     warnings: true,
   },
   http: {
-    port: 8000,
+    port: 3000,
     mediaroot: "./media",
     host: "view-stream.buyon.lk",
     allow_origin: "*",
-    cors: {
-      enabled: true,
-      origin: "*", // Change this to allow all origins temporarily for testing
-      methods: "GET,PUT,POST,DELETE,OPTIONS,HEAD,PATCH",
-      allowedHeaders: "*", // Allow all headers temporarily for testing
-      exposedHeaders:
-        "Content-Range,X-Content-Range,Content-Length,Content-Type",
-      credentials: true,
-      maxAge: 3600,
-    },
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD,PATCH",
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Expose-Headers":
-        "Content-Range,X-Content-Range,Content-Length,Content-Type",
-      "Access-Control-Allow-Credentials": "true",
-    },
   },
   trans: {
     ffmpeg: "/usr/bin/ffmpeg",
@@ -52,43 +59,34 @@ const nms = new NodeMediaServer({
   },
 });
 
-// Add this event handler to debug CORS issues
-nms.on("preConnect", (id, args) => {
-  console.log(
-    "[NodeEvent on preConnect]",
-    `id=${id} args=${JSON.stringify(args)}`
-  );
+// Proxy all requests to Node-Media-Server
+app.all("*", (req, res) => {
+  proxy.web(req, res, {
+    target: "http://localhost:8000",
+    ws: true,
+  });
 });
 
-nms.on("prePublish", (id, streamPath, args) => {});
+// Handle proxy errors
+proxy.on("error", (err, req, res) => {
+  console.error("Proxy error:", err);
+  res.status(500).send("Proxy error");
+});
 
-nms.on("prePlay", (id, streamPath, args) => {});
+// Your existing event handlers
+nms.on("prePublish", (id, streamPath, args) => {
+  console.log("[NodeEvent on prePublish]", `id=${id} streamPath=${streamPath}`);
+});
 
-const streamMapping = {
-  streamer1: {
-    publishKey: "pub_5f3a8291e4b0c9a7d6b2c1a0",
-    viewKeys: ["view_7d9f2e4a8b5c3n6m1k9h7g5", "view_2b8n4m6k9h3g5f1d7s9a4x2"],
-  },
-  streamer2: {
-    publishKey: "pub_9d2c4b7a6e8f1n3m5k9h2g4",
-    viewKeys: ["view_3f5h7j9k2n4m6q8w9e1r3t5", "view_8k2m4n6p9r3t5v7x1z8b4d6"],
-  },
-};
+nms.on("prePlay", (id, streamPath, args) => {
+  console.log("[NodeEvent on prePlay]", `id=${id} streamPath=${streamPath}`);
+});
 
-function validatePublishKey(streamKey, providedKey) {
-  const stream = streamMapping[streamKey];
-  if (!stream) {
-    return false; // Stream not found
-  }
-  return stream.publishKey === providedKey;
-}
-
-function validateViewKey(streamKey, providedKey) {
-  const stream = streamMapping[streamKey];
-  if (!stream) {
-    return false; // Stream not found
-  }
-  return stream.viewKeys.includes(providedKey);
-}
-
+// Start Node-Media-Server
 nms.run();
+
+// Start Express on port 3000
+const PORT = 8000;
+app.listen(PORT, () => {
+  console.log(`Express server running on port ${PORT}`);
+});
