@@ -3,21 +3,21 @@ const NodeMediaServer = require("node-media-server");
 const nms = new NodeMediaServer({
   rtmp: {
     port: 1935,
-    chunk_size: 4096, // Reduced from 60000 for better streaming performance
+    chunk_size: 4096,
     host: "rtmp.stream.buyon.lk",
     gop_cache: true,
-    ping: 60, // Increased for more stable connections
-    ping_timeout: 30, // Reduced to detect disconnections faster
-    warnings: true, // Enable warnings for debugging
+    ping: 60,
+    ping_timeout: 30,
+    warnings: true,
   },
   http: {
     port: 8000,
     mediaroot: "./media",
-    allow_origin: "*",
+    allow_origin: "https://event-radius.web.app", // Updated to allow your domain
     host: "view.stream.buyon.lk",
     cors: {
-      enabled: true, // Enable CORS explicitly
-      origin: "*", // Allow all origins - modify in production
+      enabled: true,
+      origin: ["https://event-radius.web.app", "*"], // Added your domain explicitly
       methods: "GET,POST,OPTIONS",
       allowedHeaders: "*",
       exposedHeaders: "*",
@@ -33,7 +33,6 @@ const nms = new NodeMediaServer({
         hls: true,
         hlsFlags:
           "[hls_time=2:hls_list_size=3:hls_flags=delete_segments:hls_init_time=4]",
-        // Added settings for better quality/performance balance
         args: "-c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -b:a 128k",
       },
     ],
