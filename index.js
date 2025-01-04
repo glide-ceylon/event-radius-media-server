@@ -13,16 +13,24 @@ const nms = new NodeMediaServer({
     port: 8000,
     mediaroot: "./media",
     host: "view.stream.buyon.lk",
-    allow_origin: "https://event-radius.web.app",
+    allow_origin: "*",
     cors: {
       enabled: true,
-      origin: "https://event-radius.web.app",
-      methods: "GET,PUT,POST,DELETE,OPTIONS",
-      allowedHeaders:
-        "Origin,X-Requested-With,Content-Type,Accept,Authorization",
-      exposedHeaders: "Content-Range,X-Content-Range",
+      origin: "*", // Change this to allow all origins temporarily for testing
+      methods: "GET,PUT,POST,DELETE,OPTIONS,HEAD,PATCH",
+      allowedHeaders: "*", // Allow all headers temporarily for testing
+      exposedHeaders:
+        "Content-Range,X-Content-Range,Content-Length,Content-Type",
       credentials: true,
       maxAge: 3600,
+    },
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS,HEAD,PATCH",
+      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Expose-Headers":
+        "Content-Range,X-Content-Range,Content-Length,Content-Type",
+      "Access-Control-Allow-Credentials": "true",
     },
   },
   trans: {
@@ -42,6 +50,14 @@ const nms = new NodeMediaServer({
     tasks: [],
     edge: process.env.NODE_ENV === "production" ? process.env.EDGE_SERVER : "",
   },
+});
+
+// Add this event handler to debug CORS issues
+nms.on("preConnect", (id, args) => {
+  console.log(
+    "[NodeEvent on preConnect]",
+    `id=${id} args=${JSON.stringify(args)}`
+  );
 });
 
 nms.on("prePublish", (id, streamPath, args) => {});
