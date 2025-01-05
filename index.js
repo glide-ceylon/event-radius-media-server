@@ -12,13 +12,7 @@ app.use(
   cors({
     origin: "*", // In production, change to your specific domains
     methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS", "HEAD", "PATCH"],
-    allowedHeaders: [
-      "Origin",
-      "X-Requested-With",
-      "Content-Type",
-      "Accept",
-      "Authorization",
-    ],
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
     credentials: true,
   })
 );
@@ -40,14 +34,17 @@ const nms = new NodeMediaServer({
     host: "view-stream.buyon.lk",
     allow_origin: "*",
   },
+  webrtc: {
+    port: 8080,
+    host: "view-stream.buyon.lk",
+  },
   trans: {
     ffmpeg: "/usr/bin/ffmpeg",
     tasks: [
       {
         app: "live",
         hls: true,
-        hlsFlags:
-          "[hls_time=2:hls_list_size=3:hls_flags=delete_segments:hls_init_time=4]",
+        hlsFlags: "[hls_time=5:hls_list_size=3:hls_flags=delete_segments:hls_init_time=4]",
         args: "-c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -b:a 128k",
       },
     ],
